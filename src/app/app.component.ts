@@ -32,13 +32,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   changeCharactersInput(element): void {
     // 1.1. Add functionality to changeCharactersInput method. Changes searchTermByCharacters Subject value on input change.
+
     const inputValue: string = element.target.value;
     this.searchTermByCharacters.next(inputValue);
-
-    // With this code, every time the changeCharactersInput method is called
-    // (for example, when the input value changes),
-    // the searchTermByCharacters subject's next value will be set to the current input value.
-    // This can be used to stream the input changes and subscribe to them in other parts of the application.
   }
 
   initCharacterEvents(): void {
@@ -55,15 +51,12 @@ export class AppComponent implements OnInit, OnDestroy {
             debounceTime(500),
             switchMap(inputValue => this.mockDataService.getCharacters(inputValue)),
         );
-    // filter out inputs with less than 3 characters
-    // debounce the inputs by 500ms to prevent API calls until the user stops typing
-    // switchMap to the getCharacters method from the mockDataService, passing in the current input value
-    // map the returned characters data to the characters.data property
   }
 
   loadCharactersAndPlanet(): void {
     // 4. On clicking the button 'Load Characters And Planets', it is necessary to process two requests and combine the results of both requests into one result array. As a result, a list with the names of the characters and the names of the planets is displayed on the screen.
     // Your code should look like this: this.planetAndCharactersResults$ = /* Your code */
+
     this.planetAndCharactersResults$ = forkJoin([
       this.mockDataService.getCharacters(),
       this.mockDataService.getPlatents()
@@ -72,10 +65,6 @@ export class AppComponent implements OnInit, OnDestroy {
           return [...characters, ...planets].map(item => item);
         })
     );
-    // With this code, the forkJoin operator is used
-    // to make both getCharacters and getPlanets API calls and wait for both to complete before continuing.
-    // The results of both calls are then combined into one result array using map.
-    // The map operator maps the characters and planets data to just the name property of each item.
   }
 
   initLoadingState(): void {
