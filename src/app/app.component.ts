@@ -19,9 +19,16 @@ import { MockDataService } from './mock-data.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   searchTermByCharacters = new Subject<string>();
-  charactersResults$: Observable<any>;
+  private readonly charactersResults$: Observable<any> =
+      this.searchTermByCharacters.pipe(
+          map(characters => (characters ? characters.trim() : "")),
+          filter(inputValue => inputValue.length >= 3),
+          debounceTime(500),
+          switchMap(inputValue => this.mockDataService.getCharacters(inputValue)),
+      );
   planetAndCharactersResults$: Observable<any>;
   isLoading: boolean = false;
+
 
   constructor(private mockDataService: MockDataService) {}
 
@@ -43,14 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // 2. Since we don't want to spam our service add filter by input value and do not call API until a user enters at least 3 chars.
 
     // 3. Add debounce to prevent API calls until user stop typing.
-
-    this.charactersResults$ = this.searchTermByCharacters
-        .pipe(
-            map(characters => (characters ? characters.trim() : "")),
-            filter(inputValue => inputValue.length >= 3),
-            debounceTime(500),
-            switchMap(inputValue => this.mockDataService.getCharacters(inputValue)),
-        );
   }
 
   loadCharactersAndPlanet(): void {
@@ -94,7 +93,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
 
-  areAllValuesTrue(elements: boolean[]): boolean {
+  private areAllValuesTrue(elements: boolean[]): boolean {
     return elements.every((el) => el);
   }
 }
